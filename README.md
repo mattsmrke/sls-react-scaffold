@@ -16,6 +16,8 @@ Clone the repo.
 
 **_ in `node_modules/bootstrap/dist/css/bootstrap.css` _**
 
-then `npm install`, change the bucket names in `serverless.yml`.
+then `npm install`.
+
+Change the bucket names in `serverless.yml`, for simple CNAME redirecting, the url must match the bucket name. So for example "www.mysite.com".
 
 `sls deploy`.
