@@ -1,0 +1,45 @@
+service: ms-react-scaffold-site
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  profile: serverlessUser
+  environment:
+    appBucketName: ${self:custom.siteBucketName}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:*
+      Resource: "*"
+plugins:
+  - serverless-s3-sync
+custom:
+  siteBucketName: ms-reactslsscaffold-client
+  s3Sync:
+    - bucketName: ${self:custom.siteBucketName}
+      localDir: build
+
+resources:
+  Resources:
+    SiteBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.siteBucketName}
+        AccessControl: PublicRead
+        WebsiteConfiguration:
+          IndexDocument: index.html
+    SiteBucketS3BucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket:
+          Ref: SiteBucket
+        PolicyDocument:
+          Statement:
+            - Sid: PublicReadGetObject
+              Effect: Allow
+              Principal: "*"
+              Action:
+                - s3:GetObject
+              Resource:
+                Fn::Join: ["", ["arn:aws:s3:::", { "Ref": "SiteBucket" }, "/*"]]
